@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">即刻</title>
+    <link rel="stylesheet" href="/res/css/styles.css" >
+    <link rel="stylesheet" href="/res/css/roll.css" >
+    <script src="/res/js/roll.js"></script>
+    <link rel="stylesheet" href="/res/css/stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="res/pic/favicon.ico" type="image/x-icon">
+    <style>
+        /* 基础样式保留 */
+        .container p { text-align: left; }
+        .essay-content { font-size: 1.1em; line-height: 1.6; margin-bottom: 15px; }
+        .essay-meta { color: #666; font-size: 0.9em; margin-top: 10px; }
+        .essay-images { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .essay-images img { width: 100px; height: 100px; object-fit: cover; cursor: zoom-in; transition: transform 0.3s; border-radius: 4px; }
+        .image-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); padding-top: 100px; box-sizing: border-box; }
+        .modal-image { display: block; width: 100%; max-width: 800px; max-height: 10000px; margin: 0 auto; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); animation-name: zoom; animation-duration: 0.3s; }
+        .close-btn { position: absolute; top: 15px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close-btn:hover, .close-btn:focus { color: #ccc; text-decoration: none; }
+        @keyframes zoom { from {transform: scale(0.1)} to {transform: scale(1)} }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+        <h1><a href="/index.html" style="color: #394E6A; text-decoration: none;" id="nav-h1">BLOG</a></h1>
+        <div id="weather"><i class="fa-solid fa-earth-americas"></i></div>
+    </header>
+
+    <div id="sidebar">
+        <a href="/index.html" class="sidebar-link"><i class="fa-solid fa-house"></i> <span class="text-30">主页</span></a>
+        <a href="/pages/page.php?s=project" class="sidebar-link"><i class="fa-solid fa-tasks"></i> <span class="text-30">项目</span></a>
+        <a href="/pages/page.php?s=scj" class="sidebar-link"><i class="fa-solid fa-star"></i> <span class="text-30">收藏</span></a>
+        <a href="/pages/essay.html" class="sidebar-link"><i class="fa-solid fa-book"></i> <span class="text-30">即刻</span></a>
+        <a href="/pages/friend.html" class="sidebar-link"><i class="fa-solid fa-users"></i> <span class="text-30">友链</span></a>
+        <a href="/pages/about.html" class="sidebar-link"><i class="fa-solid fa-compass"></i> <span class="text-30">关于</span></a>
+    </div>
+
+    <div class="layout">
+        <div class="left">
+            <div class="container"><div class="title">即刻</div></div>
+            <div class="container" style="text-align: center;">
+                <img src="/res/pic/avatar.jpg" alt="头像" style="border-radius: 50%; margin: 40px 0 20px; width: 150px; height: 150px; border: 3px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <div style="border-top: 2px solid #e5e5e5; margin: 20px 0; width: 100%;"></div>
+                <div class="icons" id="social-links"></div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div id="essay-container"><!-- 动态加载内容 --></div>
+        </div>
+    </div>
+
+    <div class="image-modal" id="imageModal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <img src="" alt="放大图片" class="modal-image" id="modalImg">
+    </div>
+
+    <script>
+        // 社交链接加载
+        function loadSocialLinks() {
+            fetch('/config/index/index.json')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.socialLinks) return;
+                    const div = document.getElementById('social-links');
+                    data.socialLinks.forEach(link => {
+                        const a = document.createElement('a');
+                        a.href = link.url || '#';
+                        a.target = '_blank';
+                        a.className = `fab fa-${link.platform}`;
+                        a.title = link.name;
+                        div.appendChild(a);
+                    });
+                });
+        }
+
+        // 内容加载
+        function loadContent() {
+            fetch('/config/essay/essay.json')
+                .then(r => r.json())
+                .then(essays => {
+                    const container = document.getElementById('essay-container');
+                    container.innerHTML = '';
+                    essays.sort((a,b) => new Date(b.time) - new Date(a.time)).forEach(essay => {
+                        container.innerHTML += `
+                            <div class="container">
+                                <div class="essay-content">${essay.content}</div>
+                                <div class="essay-meta">
+                                    <span>发布时间：${essay.time}</span>
+                                    <div class="essay-images">
+                                        ${essay.images.map(img => 
+                                            `<img src="${img}" alt="说说图片" title="${essay.content}" 
+                                            onclick="openModal(this.dataset.src)" data-src="${img}">`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        // 侧边栏切换
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+// 图片模态框
+function openModal(src) {
+  document.getElementById('modalImg').src = src;
+  document.getElementById('imageModal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('imageModal').style.display = 'none';
+}
+
+// 键盘关闭
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.preventDefault(); // 可选：防止某些场景下的默认行为干扰
+    closeModal();
+  }
+});
+
+// 点击模态框背景关闭（仅当点击的是模态框本身，而非内部图片/内容）
+window.onclick = (e) => {
+  // 注意：这里的类名需与模态框容器的类名一致（原代码为 image-modal）
+  if (e.target.classList.contains('image-modal')) { 
+    closeModal();
+  }
+};       
+
+
+
+
+        // 初始化
+        function init() {
+            Promise.all([loadSocialLinks(), loadContent()]);
+            window.addEventListener('scroll', handleScroll);
+        }
+        window.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">Friends</title> 
+<link rel="stylesheet" href="/res/css/roll.css" > <script src="/res/js/roll.js"></script>
+    <link rel="stylesheet" href="/res/css/styles.css">
+    <link rel="stylesheet" href="/res/css/stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="res/pic/favicon.ico" type="image/jpeg">
+</head>
+    <style>
+        .friend-container { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #444; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; }
+        .friend-info { display: flex; flex-direction: column; }
+        .friend-name { font-size: 1.2em; font-weight: bold; }
+        .friend-desc { font-size: 0.9em; color: #aaa; }
+        .friend-link { text-decoration: none; font-size: 0.9em; }
+        .friend-link:hover { text-decoration: underline; }
+        .link-item { display: flex; align-items: center; margin: 9px 0; padding: 10px; border: 2px solid #ccc; border-radius: 10px; }
+        .link-avatar { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; margin-right: 15px; }
+        .link-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .link-info { flex: 1; }
+        .link-name { font-size: 18px; margin-bottom: 5px; }
+        .link-name a { text-decoration: none; }
+        .link-name a:hover { text-decoration: underline; }
+        .link-desc { font-size: 14px; color: #666; }
+        @media screen and (min-width: 800px) {
+            .link-container { display: flex; flex-wrap: wrap; justify-content: space-between; }
+            .link-item { width: 49%; box-sizing: border-box; }
+        }
+    </style>
+<body>
+  <!-- 顶部导航栏 -->
+  <header>
+      <div id="hamburger" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+      </div>
+      <!-- 导航栏H1动态绑定 -->
+      <h1>
+          <a href="/index.html" style="color: #394E6A; text-decoration: none;" id="nav-h1">FRIEND</a>
+      </h1>
+      <div id="weather">
+          <i class="fa-solid fa-earth-americas"></i>
+      </div>
+  </header>
+
+  <!-- 侧边栏（图标需手动维护，JSON不控制） -->
+  <div id="sidebar">
+      <a href="/index.html" class="sidebar-link">
+          <i class="fa-solid fa-house"></i> 
+          <span class="text-30">主页</span> 
+      </a>
+      <a href="/pages/page.php?s=project" class="sidebar-link">
+          <i class="fa-solid fa-tasks"></i>
+          <span class="text-30">项目</span>
+      </a>
+      <a href="/pages/page.php?s=scj" class="sidebar-link">
+          <i class="fa-solid fa-star"></i>
+          <span class="text-30">收藏</span>
+      </a>
+      <a href="/pages/essay.html" class="sidebar-link">
+          <i class="fa-solid fa-book"></i>
+          <span class="text-30">即刻</span>
+      </a>
+      <a href="/pages/friend.html" class="sidebar-link">
+          <i class="fa-solid fa-users"></i>
+          <span class="text-30">友链</span>
+      </a>
+      <a href="/pages/about.html" class="sidebar-link">
+          <i class="fa-solid fa-compass"></i>
+          <span class="text-30">关于</span>
+      </a>
+  </div>
+
+    <!-- 主体布局 -->
+    <div class="layout">
+        <!-- 左侧容器 -->
+        <div class="left">
+      <div class="container">
+        <div class="title">🍻友链</div>
+      </div>
+            <div class="container">
+<div style="text-align:center;">
+    <img src="/res/pic/avatar.jpg" alt="头像" 
+         style="border-radius:50%;margin-bottom:20px;margin-top:40px;width:150px;height:150px;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.1);">
+    <div style="border-top:2px solid #e5e5e5;margin:20px 0;width:100%;"></div>
+
+<div class="icons" id="social-links"></div></div></div>
+
+
+            
+                 <div class="container">
+                <div class="title">🎉申请友链</div>
+                <div class="content">
+                    <p>在bilibili、Github或QQ联系我即可将你的网站添加进来哦~</p>
+                </div>
+            </div>       
+
+
+
+        </div>
+
+        <!-- 右侧容器动态生成区域 -->
+         <div class="right">
+            <div class="container">
+                <div class="title">🎞️本博客的信息</div>
+                <div class="content">
+                    <p>🏷️站名：Triangle的博客</p>
+                    <p>🌐链接：https://egg-dan.space/</p>
+                    <p>🤠头像：<a href="/res/pic/avatar.jpg" target="_blank" id="cua7kb6ahlmelontvbs0" title="点击访问图片链接">访问图片链接</a></p>
+             
+                </div>
+            </div>
+            <div class="container">
+                <div class="title">🍻友链展示</div>
+                <div class="link-container" id="friend-links"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 引入JSON解析脚本（PHP动态输出数据） -->
+<script>
+       function loadConfig() {
+            return fetch('/config/index/index.json')
+                .then(response => response.json());
+        }
+
+        // 初始化页面
+        async function init() {
+            try {
+                // 加载配置
+                const config = await loadConfig();
+                
+ 
+                
+                // 渲染社交媒体链接
+                const socialLinksDiv = document.getElementById('social-links');
+                socialLinksDiv.innerHTML = '';
+                
+                config.socialLinks.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.className = `fab fa-${link.platform}`; // 自动生成图标类名
+                    a.target = '_blank'; // 新窗口打开
+                    socialLinksDiv.appendChild(a);
+                });
+                
+                // 加载友链
+                fetchFriendLinks();
+                
+            } catch (error) {
+                console.error('初始化失败:', error);
+            }
+        }
+ 
+
+        // Fetch and display friend links
+        function fetchFriendLinks() {
+            fetch('/config/other/friends.json')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('friend-links');
+                    container.innerHTML = ''; // 清空原有内容
+                    data.forEach(friend => {
+                        const linkItem = document.createElement('div');
+                        linkItem.className = 'link-item';
+                        linkItem.innerHTML = `
+                            <div class="link-avatar">
+                                <img src="${friend.avatar}" alt="${friend.name}头像">
+                            </div>
+                            <div class="link-info">
+                                <div class="link-name">
+                                    <a href="${friend.url}" target="_blank">${friend.name}</a>
+                                </div>
+                                <div class="link-desc">${friend.desc}</div>
+                            </div>
+                        `;
+                        container.appendChild(linkItem);
+                    });
+                })
+                .catch(error => console.error('友链加载失败:', error));
+        }
+        
+               // 侧边栏切换函数（补充缺失的大括号）
+function toggleSidebar() { 
+    const sidebar = document.getElementById("sidebar"); 
+    const hamburger = document.getElementById("hamburger");
+    sidebar.classList.toggle("open");
+} 
+
+// 初始化页面调用
+init();
+
+</script>
+
+
+</body>
+</html>

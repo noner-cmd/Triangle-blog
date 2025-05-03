@@ -1,0 +1,24 @@
+{
+  "blogTitle": "Triangle",
+  "slogan": "追求的意义不在于抵达终点，而在于路上每一寸光明的觉醒。",
+  "blogUrl": "https://egg-dan.space/",
+  "avatarUrl": "http://egg-dan.space/res/pic/avatar.jpg",
+  "socialLinks": [
+    {
+      "platform": "qq",
+      "url": "https://tool.gljlw.com/qq/?qq=1952755413"
+    },
+    {
+      "platform": "spotify",
+      "url": "https://y.music.163.com/m/user?id=2142752671"
+    },
+    {
+      "platform": "bilibili",
+      "url": "https://b23.tv/2c4GVzv"
+    },
+    {
+      "platform": "github",
+      "url": "https://github.com/noner-cmd"
+    }
+  ]
+}

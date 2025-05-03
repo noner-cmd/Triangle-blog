@@ -1,0 +1,26 @@
+[
+    {
+        "text": "背完四级单词",
+        "tags": [
+            "tag-high",
+            "tag-daily"
+        ],
+        "progress": 10
+    },
+    {
+        "text": "学习java",
+        "tags": [
+            "tag-medium",
+            "tag-work"
+        ],
+        "progress": 36
+    },
+    {
+        "text": "打扫房间",
+        "tags": [
+            "tag-low",
+            "tag-daily"
+        ],
+        "progress": 50
+    }
+]

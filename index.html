@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title> <!-- 动态加载 -->
+    <link rel="stylesheet" href="/res/css/styles.css">
+    <link rel="stylesheet" href="/res/css/stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="res/pic/favicon.ico" type="image/jpeg">
+    
+<style>
+
+    </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header>
+      <div id="hamburger" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+      </div>
+      <h1>
+          <a href="/index.html" style="color: #394E6A; text-decoration: none;">
+              WORLD
+          </a>
+      </h1>
+      <div id="weather">
+          <i class="fa-solid fa-earth-americas"></i>
+      </div>
+  </header>
+
+
+<!-- 侧边栏 -->
+<div id="sidebar">
+    <a href="/index.html" class="sidebar-link">
+        <i class="fa-solid fa-house"></i> <!-- 图标 -->
+        <span class="text-30">主页</span> <!-- 新增文字类 -->
+    </a>
+    <a href="/pages/page.php?s=project" class="sidebar-link">
+        <i class="fa-solid fa-tasks"></i>
+        <span class="text-30">项目</span>
+    </a>
+    <a href="/pages/page.php?s=scj" class="sidebar-link">
+        <i class="fa-solid fa-star"></i>
+        <span class="text-30">收藏</span>
+    </a>
+    <a href="/pages/essay.html" class="sidebar-link">
+        <i class="fa-solid fa-book"></i>
+        <span class="text-30">即刻</span>
+    </a>
+    <a href="/pages/friend.html" class="sidebar-link">
+        <i class="fa-solid fa-users"></i>
+        <span class="text-30">友链</span>
+    </a>
+        <a href="/pages/about.html" class="sidebar-link">
+        <i class="fa-solid fa-compass"></i>
+        <span class="text-30">关于</span>
+    </a>
+</div>
+
+    <!-- 主体布局 -->
+    <div class="layout">
+        <!-- 左侧容器 -->
+        <div class="left">
+            <div class="container">
+               <div class="title" id="blog-title"></div>
+                <div class="title"></i> 🌐的博客</div>
+       
+            </div>
+
+            <div class="container">
+                <img src="/res/pic/index.webp" alt="index" style="width: 100%; border-radius: 10px;">
+                <div class="title"><i class="fa-solid fa-house"></i> HOME</div>
+                <div class="content">
+                    <p id="slogan"></p>
+                    <div class="icons" id="social-links"></div>
+                </div>
+            </div>
+            <!-- 最近在听 -->
+            <div class="container">
+                <h2 class="title"><i class="fa-solid fa-headphones"></i> 最近在听</h2>
+                <div id="songs"></div>
+            </div>
+            <div class="container">
+                <div class="content footer-content">
+                    <p><i class="fa-solid fa-clock"></i> 已安全运行：<span id="running-days"></span>天</p>
+         
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧容器 -->
+        <div class="right">
+
+
+            <!-- Todo List（动态加载） -->
+            <div class="container">
+                <h2 class="title"><i class="fa-solid fa-rocket"></i> Todo List</h2>
+                <div class="todo-list" id="todo-list"></div>
+            </div>
+
+            <div class="container">
+                <div class="title"><i class="fa-solid fa-tasks"></i> 项目</div>
+                <div class="content">
+                    <p>这里有许多有趣的项目。塔罗牌API🔮、简易网盘☁️等等...快来看看吧~</p>
+                    <a href="/pages/page.php?s=project" class="btn">查看更多</a>
+                </div>
+            </div>
+
+            <!-- 收藏 -->
+            <div class="container">
+                <div class="title"><i class="fa-solid fa-star"></i> 收藏</div>
+                <div class="content">
+                    <p>这里收集了许多常用的网页，包含很多非常有用的资源💾和工具🛠️，希望能对你产生帮助~</p>
+                    <a href="/pages/page.php?s=scj" class="btn">查看更多</a>
+                </div>
+            </div>
+
+            <!-- 博客 -->
+            <div class="container">
+                <div class="title"><i class="fa-solid fa-book"></i> 即刻</div>
+                <div class="content">
+                    <p>记录了我的各种开发经历和所思所想，以及学习过程中的各种见闻</p>
+                    <a href="/pages/essay.html" class="btn">查看更多</a>
+                </div>
+            </div>
+
+            <!-- 友链 -->
+            <div class="container">
+                <div class="title"><i class="fa-solid fa-users"></i> 友链</div>
+                <div class="content">
+                    <p>在这里你可以看到本博客的相关信息、许多友链和其他开发内容。志同道合的朋友，让我们互换友链吧~</p>
+                    <a href="/pages/friend.html" class="btn">查看更多</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 脚本 -->
+    <script>
+        // 加载网站配置
+        function loadConfig() {
+            return fetch('/config/index/index.json')
+                .then(response => response.json());
+        }
+
+        // 初始化页面
+        async function init() {
+            try {
+                // 加载配置
+                const config = await loadConfig();
+                
+                // 更新标题
+                document.title = config.blogTitle;
+                document.getElementById('blog-title').textContent = config.blogTitle;
+                
+                // 更新标语
+                document.getElementById('slogan').textContent = config.slogan;
+                
+                // 渲染社交媒体链接
+                const socialLinksDiv = document.getElementById('social-links');
+                socialLinksDiv.innerHTML = '';
+                
+                config.socialLinks.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.className = `fab fa-${link.platform}`; // 自动生成图标类名
+                    a.target = '_blank'; // 新窗口打开
+                    socialLinksDiv.appendChild(a);
+                });
+            } catch (error) {
+                console.error('加载配置失败:', error);
+            }
+        }
+
+        // 计算网站运行天数
+        function calculateRunningDays() {
+            const startDate = new Date('2024-10-16');
+            const currentDate = new Date();
+            const differenceInDays = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('running-days').textContent = differenceInDays;
+        }
+
+        // 动态渲染 Todo List（从 todo.json 加载）
+        function renderTodoList(todos) {
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+
+            todos.forEach(todo => {
+                const todoItem = document.createElement('div');
+                todoItem.className = 'todo-item';
+
+                const todoText = document.createElement('div');
+                todoText.className = 'todo-text';
+
+                // 任务文本
+                const textSpan = document.createElement('span');
+                textSpan.textContent = todo.text;
+
+                // 标签容器
+                const todoTags = document.createElement('div');
+                todoTags.className = 'todo-tags';
+
+                // 生成多个标签
+                todo.tags.forEach(tagClass => {
+                    const tagSpan = document.createElement('span');
+                    tagSpan.className = `todo-tag ${tagClass}`;
+                    tagSpan.textContent = tagClass.split('-')[1]; // 提取标签名称（如 "tag-high" 转为 "high"）
+                    todoTags.appendChild(tagSpan);
+                });
+
+                todoText.appendChild(textSpan);
+                todoText.appendChild(todoTags);
+
+                // 进度条
+                const todoProgress = document.createElement('div');
+                todoProgress.className = 'todo-progress';
+                const progressFill = document.createElement('div');
+                progressFill.className = 'todo-progress-fill';
+                progressFill.style.width = `${todo.progress}%`;
+                todoProgress.appendChild(progressFill);
+
+                todoItem.appendChild(todoText);
+                todoItem.appendChild(todoProgress);
+                todoList.appendChild(todoItem);
+            });
+        }
+
+        // 加载 Todo 数据
+        fetch('/config/index/todo.json')
+            .then(response => response.json())
+            .then(data => renderTodoList(data))
+            .catch(error => console.error('加载 Todo 数据失败:', error));
+
+        // 加载最近在听歌曲（示例代码，需根据实际 JSON 结构调整）
+        fetch('config/index/music.json')
+            .then(response => response.json())
+            .then(data => {
+                const songsDiv = document.getElementById('songs');
+                data.forEach(song => {
+                    const songElement = document.createElement('div');
+                    songElement.className = 'song-item';
+
+                    const img = document.createElement('img');
+                    img.src = song.picUrl || '';
+                    img.alt = song.name || '';
+                    img.style.width = '60px';
+                    img.style.height = '60px';
+                    img.style.borderRadius = '10px';
+                    img.style.marginRight = '15px';
+
+                    const songInfo = document.createElement('div');
+                    songInfo.className = 'song-info';
+
+                    const h3 = document.createElement('h3');
+                    h3.textContent = song.name || '';
+
+                    const p = document.createElement('p');
+                    p.textContent = song.singer || '';
+                    p.style.color = '#666';
+                    p.style.margin = '5px 0 0';
+
+                    songInfo.appendChild(h3);
+                    songInfo.appendChild(p);
+
+                    songElement.appendChild(img);
+                    songElement.appendChild(songInfo);
+                    songsDiv.appendChild(songElement);
+                });
+            })
+            .catch(error => console.error('加载歌曲数据失败:', error));
+
+
+function toggleSidebar() {
+          const sidebar = document.getElementById("sidebar");
+          const hamburger = document.getElementById("hamburger");
+
+          sidebar.classList.toggle("open");
+
+
+      }
+
+      // 初始化页面
+      init();
+      calculateRunningDays();
+    </script>
+
+
+      
+</body>
+</html>

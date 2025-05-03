@@ -1,0 +1,29 @@
+{
+    "pageTitle": "Project",
+    "navH1": "WORLD",
+    "leftFirstContainer": {
+        "title": "🎯项目",
+        "image": "\/res\/pic\/index.webp",
+        "description": "这里有许多有趣的项目。塔罗牌API🔮、简易网盘☁️等等...快来看看吧~"
+    },
+    "rightContainers": [
+        {
+            "title": "🌏博客",
+            "content": "一个简洁、高效的动态博客，完全不依赖数据库。发布简便，管理高效",
+            "buttonLink": "https:\/\/github.com\/noner-cmd\/An-efficient-blog",
+            "buttonText": "查看详情"
+        },
+        {
+            "title": "🔮塔罗牌",
+            "content": "一个抽塔罗牌的API，包括正\/逆位、排面图片、排面解析等内容",
+            "buttonLink": "https:\/\/github.com\/noner-cmd\/Tarot-Card-api",
+            "buttonText": "查看详情"
+        },
+        {
+            "title": "🎵音乐模块",
+            "content": "通过本项目可为你的个人博客添加了“最近在听”音乐展示模块展示网易云最近收藏的歌曲。",
+            "buttonLink": "https:\/\/github.com\/noner-cmd\/Music-section-for-blog",
+            "buttonText": "查看详情"
+        }
+    ]
+}

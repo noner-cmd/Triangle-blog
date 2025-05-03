@@ -1,78 +1,154 @@
 <?php
-// 安全限制：只允许 POST/GET 请求
+// 图片压缩处理函数
+function compressImage($sourcePath, $destPath, $maxSize = 800 * 1024) {
+    // 验证图片有效性
+    $imageInfo = getimagesize($sourcePath);
+    if (!$imageInfo) return false;
+    list($width, $height, $type) = $imageInfo;
+    $mime = image_type_to_mime_type($type);
+
+    // 创建源图像资源
+    $createFuncs = [
+        IMAGETYPE_JPEG => 'imagecreatefromjpeg',
+        IMAGETYPE_PNG => 'imagecreatefrompng',
+        IMAGETYPE_GIF => 'imagecreatefromgif'
+    ];
+    if (!isset($createFuncs[$type]) || !function_exists($createFuncs[$type])) {
+        return false;
+    }
+    $source = $createFuncs[$type]($sourcePath);
+    if (!$source) return false;
+
+    // 处理小文件：直接复制避免原图留存
+    if (filesize($sourcePath) <= $maxSize) {
+        return copy($sourcePath, $destPath);
+    }
+
+    // 计算压缩比例（保持宽高比）
+    $ratio = sqrt($maxSize / filesize($sourcePath));
+    $newWidth = max(1, round($width * $ratio));
+    $newHeight = max(1, round($height * $ratio));
+
+    // 创建目标图像资源
+    $target = imagecreatetruecolor($newWidth, $newHeight);
+    
+    // 处理PNG透明通道
+    if ($type === IMAGETYPE_PNG) {
+        imagealphablending($target, false);
+        imagesavealpha($target, true);
+        $transColor = imagecolorallocatealpha($target, 0, 0, 0, 127);
+        imagefill($target, 0, 0, $transColor);
+    }
+
+    // 高质量图像缩放
+    imagecopyresampled($target, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+    // 保存图像
+    $saveFuncs = [
+        IMAGETYPE_JPEG => ['imagejpeg', 85], // JPG压缩质量85%
+        IMAGETYPE_PNG => ['imagepng', null],
+        IMAGETYPE_GIF => ['imagegif', null]
+    ];
+    $saveFunc = $saveFuncs[$type][0];
+    $quality = $saveFuncs[$type][1];
+    $result = $quality === null ? $saveFunc($target, $destPath) : $saveFunc($target, $destPath, $quality);
+
+    // 释放资源
+    imagedestroy($source);
+    imagedestroy($target);
+    return $result;
+}
+
+// 安全限制：仅允许GET/POST请求
 if (!in_array($_SERVER['REQUEST_METHOD'], ['POST', 'GET'])) {
     http_response_code(405);
     exit('Method Not Allowed');
 }
 
-// 处理删除请求
+// 删除动态处理
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $jsonFile = __DIR__ . '/config/essay/essay.json';
-    $data = file_exists($jsonFile) ? json_decode(file_get_contents($jsonFile), true) : [];
+    $data = file_exists($jsonFile) 
+        ? json_decode(file_get_contents($jsonFile), true) 
+        : [];
     $deleteIndex = (int)$_GET['delete'];
 
     if (isset($data[$deleteIndex])) {
-        // 删除对应图片
+        // 删除关联图片
         foreach ($data[$deleteIndex]['images'] as $imagePath) {
-            $realPath = __DIR__ . '/DCIM/' . basename($imagePath); // 安全路径处理
+            $realPath = __DIR__ . '/DCIM/' . basename($imagePath);
             if (file_exists($realPath) && is_file($realPath)) {
                 unlink($realPath);
             }
         }
 
-        // 删除JSON数据并重新索引
+        // 删除JSON数据并重置索引
         unset($data[$deleteIndex]);
-        $data = array_values($data); // 重置数组索引
+        $data = array_values($data);
         file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
 }
 
-// 处理表单提交
+// 表单提交处理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonFile = __DIR__ . '/config/essay/essay.json';
-    $data = file_exists($jsonFile) ? json_decode(file_get_contents($jsonFile), true) : [];
+    $data = file_exists($jsonFile) 
+        ? json_decode(file_get_contents($jsonFile), true) 
+        : [];
     $uploadDir = __DIR__ . '/DCIM/';
     $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
     $images = [];
 
-    // 处理图片上传
+    // 处理多图片上传
     if (!empty($_FILES['images']['name'][0])) {
         foreach ($_FILES['images']['error'] as $key => $error) {
             if ($error === UPLOAD_ERR_OK) {
-                $fileName = $_FILES['images']['name'][$key];
-                $fileTmp = $_FILES['images']['tmp_name'][$key];
+                $file = $_FILES['images'];
+                $fileName = $file['name'][$key];
+                $fileTmp = $file['tmp_name'][$key];
                 $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-                $fileSize = $_FILES['images']['size'][$key];
+                $fileSize = $file['size'][$key];
 
-                // 验证文件类型和大小
+                // 验证文件类型和大小限制（服务器端防护）
                 if (in_array($fileExt, $allowedExts) && $fileSize < 100 * 1024 * 1024) {
                     $newFileName = uniqid() . '.' . $fileExt;
                     $destPath = $uploadDir . $newFileName;
-                    
-                    // 移动文件并验证
-                    if (move_uploaded_file($fileTmp, $destPath) && is_file($destPath)) {
+                    $tempPath = $uploadDir . 'tmp_' . $newFileName; // 临时文件路径
+
+                    // 移动上传文件到临时目录
+                    if (!move_uploaded_file($fileTmp, $tempPath)) {
+                        continue; // 移动失败跳过
+                    }
+
+                    // 处理图片（压缩或复制）
+                    if (compressImage($tempPath, $destPath)) {
+                        unlink($tempPath); // 删除临时文件
                         $images[] = '/DCIM/' . $newFileName; // 存储相对路径
+                    } else {
+                        unlink($tempPath); // 处理失败删除临时文件
+                        continue;
                     }
                 }
             }
         }
     }
 
-    // 构建新条目
+    // 构建新动态条目
     $newEntry = [
         'content' => trim($_POST['content']),
         'images' => $images,
         'time' => date('Y-m-d H:i:s')
     ];
 
-    // 验证内容非空
+    // 验证内容非空并保存
     if (!empty($newEntry['content'])) {
         $data[] = $newEntry;
         file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
+    // 重定向回当前页面
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
@@ -146,11 +222,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- 动态列表 -->
     <div class="dynamic-list">
-       
         <?php
         $jsonFile = __DIR__ . '/config/essay/essay.json';
-        $data = file_exists($jsonFile) ? json_decode(file_get_contents($jsonFile), true) : [];
-        
+        $data = file_exists($jsonFile) 
+            ? json_decode(file_get_contents($jsonFile), true) 
+            : [];
+
         if (empty($data)): ?>
             <p>暂无动态，请添加新内容</p>
         <?php else: ?>

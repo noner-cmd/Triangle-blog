@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">关于</title>
+    
+    <link rel="stylesheet" href="/res/css/styles.css">
+   
+    <link rel="stylesheet" href="/res/css/stylespc.css" media="screen and (min-width: 800px)">
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="icon" href="res/pic/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/res/css/roll.css" >
+ <script src="/res/js/roll.js"></script>    
+    <style>
+        
+        .container p {
+            text-align: left;
+        }
+
+    </style>
+</head>
+
+<body>
+    
+    <header>
+        <!-- 汉堡菜单按钮（移动端触发侧边栏） -->
+        <div id="hamburger" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i> <!-- 菜单图标 -->
+        </div>
+        <!-- 导航标题（带首页链接） -->
+        <h1>
+            <a href="/index.html" style="color: #394E6A; text-decoration: none;" id="nav-h1">ABOUT</a>
+        </h1>
+        <!-- 天气图标预留位置 -->
+        <div id="weather">
+            <i class="fa-solid fa-earth-americas"></i> <!-- 地球图标 -->
+        </div>
+    </header>
+
+    <!-- 侧边导航栏（固定左侧，移动端隐藏） -->
+    <div id="sidebar">
+        <!-- 导航链接（需手动维护，与JSON无关） -->
+        <a href="/index.html" class="sidebar-link">
+            <i class="fa-solid fa-house"></i> 
+            <span class="text-30">主页</span>
+        </a>
+        <a href="/pages/page.php?s=project" class="sidebar-link">
+            <i class="fa-solid fa-tasks"></i>
+            <span class="text-30">项目</span>
+        </a>
+        <a href="/pages/page.php?s=scj" class="sidebar-link">
+            <i class="fa-solid fa-star"></i>
+            <span class="text-30">收藏</span>
+        </a>
+        <a href="/pages/essay.html" class="sidebar-link">
+            <i class="fa-solid fa-book"></i>
+            <span class="text-30">即刻</span>
+        </a>
+        <a href="/pages/friend.html" class="sidebar-link">
+            <i class="fa-solid fa-users"></i>
+            <span class="text-30">友链</span>
+        </a>
+        <a href="/pages/about.html" class="sidebar-link">
+            <i class="fa-solid fa-compass"></i>
+            <span class="text-30">关于</span>
+        </a>
+    </div>
+
+    <!-- 主体内容布局 -->
+    <div class="layout">
+        <!-- 左侧个人信息栏 -->
+        <div class="left">
+            <div class="container">
+                <div class="title">关于</div> <!-- 标题 -->
+            </div>
+            <div class="container" style="text-align: center;">
+                <!-- 头像 -->
+                <img 
+                    src="/res/pic/avatar.jpg" 
+                    alt="头像" 
+                    style="
+                        border-radius: 50%;
+                        margin: 40px 0 20px;
+                        width: 150px;
+                        height: 150px;
+                        border: 3px solid #fff;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    "
+                >
+                <!-- 分割线 -->
+                <div style="border-top: 2px solid #e5e5e5; margin: 20px 0; width: 100%;"></div>
+                <!-- 社交链接容器（动态生成） -->
+                <div class="icons" id="social-links"></div>
+            </div>
+        </div>
+
+        <!-- 右侧内容区（动态加载about.json内容） -->
+        <div class="right">
+            <div class="container">
+                <div class="content">
+                    <!-- 此处内容由/config/index/about.json动态填充 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本逻辑区域 -->
+    <script>
+;
+        /**
+         * 功能：加载社交链接（从index.json获取）
+         * 依赖：index.json中的socialLinks数组
+         */
+        function loadSocialLinks() {
+            // 发起JSON请求
+            fetch('/config/index/index.json')
+                .then(response => response.json()) // 解析为JSON对象
+                .then(data => {
+                    // 校验数据是否存在社交链接数组
+                    if (!data.socialLinks || !Array.isArray(data.socialLinks)) {
+                        console.warn('未检测到社交链接配置（index.json缺少socialLinks字段）');
+                        return;
+                    }
+                    // 获取社交链接容器
+                    const socialLinksDiv = document.getElementById('social-links');
+                    // 清空原有内容（避免重复渲染）
+                    socialLinksDiv.innerHTML = '';
+                    // 循环生成图标链接
+                    data.socialLinks.forEach(link => {
+                        const a = document.createElement('a');
+                        // 基础属性
+                        a.href = link.url || '#'; // 防止url缺失
+                        a.target = '_blank'; // 新窗口打开
+                        a.rel = 'noopener noreferrer'; // 安全属性
+                        // 图标类名（自动匹配Font Awesome图标）
+                        a.className = `fab fa-${link.platform}`;
+                        // 鼠标悬停提示（可选）
+                        if (link.name) a.title = link.name;
+                        // 添加到页面
+                        socialLinksDiv.appendChild(a);
+                    });
+                })
+                .catch(error => {
+                    console.error('社交链接加载失败:', error);
+                });
+        }
+
+        /**
+         * 功能：加载右侧内容（从about.json获取HTML片段）
+         */
+        function loadContent() {
+            // 发起HTML片段请求
+            fetch('/config/index/about.json')
+                .then(response => response.text()) // 直接获取文本内容
+                .then(html => {
+                    // 渲染到内容容器
+                    const contentDiv = document.querySelector('.content');
+                    contentDiv.innerHTML = html || '<p>内容加载失败，请检查配置文件</p>';
+                })
+                .catch(error => {
+                    console.error('右侧内容加载失败:', error);
+                });
+        }
+
+        /**
+         * 功能：切换侧边栏显示状态
+         */
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            // 添加/移除CSS类控制显示（需在CSS中定义.open样式）
+            sidebar.classList.toggle('open');
+            // 可选：切换汉堡菜单图标（如需旋转效果）
+            // document.getElementById('hamburger').classList.toggle('active');
+        }
+
+        /**
+         * 初始化函数（页面加载后执行）
+         */
+        function init() {
+            // 执行加载逻辑（社交链接和内容并行加载）
+            Promise.all([loadSocialLinks(), loadContent()]);
+            // 可选：动态设置页面标题（从index.json获取）
+            // fetch('/config/index/index.json')
+            //     .then(res => res.json())
+            //     .then(data => document.title = data.pageTitle || '关于');
+        }
+
+        // 页面加载后立即初始化
+        window.addEventListener('DOMContentLoaded', init);
+        // 初始化
+        function init() {
+            Promise.all([loadSocialLinks(), loadContent()]);
+            window.addEventListener('scroll', handleScroll);
+        }
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

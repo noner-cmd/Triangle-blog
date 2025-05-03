@@ -1,0 +1,330 @@
+    /* 侧边栏整体样式 */
+    #sidebar {
+        width: 200px; /* 侧边栏总宽度 */
+        padding: 10px 0;
+    }
+
+    .sidebar-link {
+        display: block; /* 块级元素，方便定位 */
+        position: relative; /* 为文字绝对定位提供参考 */
+        height: 15px; /* 行高 */
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .sidebar-link i {
+        position: absolute; /* 图标固定在左侧 */
+        left: 25px; /* 图标距左侧 10px（可调整） */
+        width: 20px; /* 图标宽度 */
+        text-align: center; /* 图标居中 */
+    }
+
+    /* 新建类：文字距离左侧 30% */
+    .text-30 {
+        position: absolute; /* 绝对定位，相对于 .sidebar-link */
+        left: 30%; /* 文字左侧距父容器左侧 30% */
+        top: 50%; /* 垂直居中 */
+        transform: translateY(-45%); /* 修正垂直居中 */
+    }
+    #sidebar {
+        /* 原有定位和布局样式保留，新增以下代码 */
+        background: rgba(255, 255, 255, 0.7); /* 半透明背景（必须，否则模糊无效） */
+        backdrop-filter: blur(8px); /* 毛玻璃模糊强度（推荐 8-15px） */
+        -webkit-backdrop-filter: blur(10px); /* 兼容 Safari */
+    }
+
+    /* 侧边栏打开状态（若有切换类名，如 .open） */
+    #sidebar.open {
+        /* 若毛玻璃仅在打开时生效，可在此重复样式 */
+    }
+a {
+  text-decoration: none; /* 直接作用于所有链接状态 */
+}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #DFE5F0;
+            color: #394E6A;
+            padding-top: 60px; /* 增加这个样式，使页面整体下移60px */
+            font-weight: bold;
+        }
+
+        /* 顶部导航栏 */
+header {
+    width: 100%;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.7); /* 设置半透明背景色 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center; /* 添加这行代码让h1元素居中 */
+    align-items: center;
+    padding: 0 15px;
+    backdrop-filter: blur(8px); /* 添加高斯模糊效果，值越大越模糊 */
+}
+
+
+        a {
+            color: #66a7ff;
+        }
+
+        header h1 {
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        /* 容器样式 */
+       .container {
+            margin: 15px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-sizing: border-box;
+            margin-top: 15px; /* 为了给导航栏留空间 */
+        }
+
+       .container img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 0;
+        }
+
+       .title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+       .content {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+       .icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+       .icons a {
+            font-size: 30px;
+            color: #394E6A;
+            text-decoration: none;
+        }
+
+        /* 页尾容器 */
+       .footer-content {
+            font-size: 20px; /* 调大字体大小 */
+            text-align: center; /* 居中对齐 */
+        }
+
+        /* 样式调整 */
+       .btn {
+            margin-top: 20px;
+            display: block;
+            padding: 10px;
+            text-align: center;
+            background-color: #394E6A;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+       .btn:hover {
+            background-color: #2e3a51;
+        }
+
+        /* 最近在听板块内子元素样式 */
+       .recently-listening h2 {
+            font-size: 30px;
+            margin-top: 0;
+            color: #394E6A;
+            text-align: center;
+        }
+
+       .song-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+       .song-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+       .song-info {
+            flex: 1;
+        }
+
+       .song-info h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+       .song-info p {
+            margin: 0;
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 新增的 Todo List 样式 */
+       .todo-item {
+            border: 1px solid #e0e0e0; /* 添加边框 */
+            border-radius: 10px; /* 边框圆角 */
+            padding: 15px; /* 添加内边距 */
+            margin-bottom: 15px; /* 项目之间的间距 */
+            display: flex;
+            flex-direction: column; /* 修改为列布局 */
+            align-items: flex-start; /* 子元素左对齐 */
+        }
+
+       .todo-text {
+            font-size: 18px; /* 与页面其他部分文字大小统一 */
+            line-height: 1.6; /* 与页面其他部分行高统一 */
+            color: #394E6A; /* 与页面其他部分文字颜色统一 */
+            display: flex;
+            justify-content: space-between; /* 两端对齐 */
+            align-items: flex-start; /* 垂直方向左对齐，避免标签被拉伸 */
+            width: 100%; /* 占满容器宽度 */
+            min-height: 40px; /* 固定最小高度，确保文本和标签区域高度一致 */
+        }
+
+       .todo-tags {
+            display: flex;
+            gap: 8px; /* 标签之间的间距 */
+            flex-shrink: 0; /* 防止标签容器被拉伸 */
+            align-items: center; /* 标签垂直居中 */
+        }
+
+       .todo-progress {
+            height: 15px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%; /* 让进度条占满容器宽度 */
+            margin-top: 5px; /* 进度条和任务文本之间的间距 */
+        }
+
+       .todo-progress-fill {
+            height: 100%;
+            background-color: #394E6A; /* 与按钮颜色统一 */
+            width: 0; /* 初始宽度为0，需要根据实际情况设置 */
+        }
+
+        /* 新增的标签样式 */
+       .todo-tag {
+            display: inline-block;
+            padding: 6px 12px; /* 增加垂直内边距，固定标签高度（例如：24px = 6px*2 + 字体大小） */
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background-color: #ffffff; /* 设置白色背景 */
+            border: 1px solid; /* 保留边框 */
+            white-space: nowrap; /* 防止标签内文字换行 */
+        }
+
+       .tag-high { border-color: #ff5733; color: #ff5733; }
+       .tag-medium { border-color: #ffc300; color: #ffc300; }
+       .tag-low { border-color: #33ff57; color: #33ff57; }
+       .tag-work { border-color: #337ab7; color: #337ab7; }
+       .tag-daily { border-color: #999; color: #999; }
+        /* 汉堡菜单和叉叉按钮 */
+        #hamburger {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        #hamburger.open i {
+            content: "\f00d"; /* 设置为叉叉图标 */
+        }
+
+        /* 侧边栏 */
+        #sidebar {
+          
+            position: fixed;
+            top: 60px; /* 侧边栏下移60px */
+            left: -250px;
+            height: calc(100% - 60px); /* 高度调整，避免覆盖导航栏 */
+ 
+            transition: left 0.3s ease;
+        }
+
+        /* 侧边栏打开时 */
+        #sidebar.open {
+            left: 0;
+        }
+
+        /* 侧边栏中的链接 */
+        #sidebar a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #394E6A;
+            font-weight: bold;
+        }
+
+        #sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+
+        header h1 {
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        /* Weather icon style */
+        #weather {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 30px; /* 确保与右侧有适当间距 */
+        }
+
+        /* 侧边栏关闭按钮 */
+        #sidebar-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+
+            color: #394E6A;
+            cursor: pointer;
+        }
+
+        /* 侧边栏打开时 */
+        #sidebar.open {
+            left: 0;
+        }
+
+        #sidebar a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #394E6A;
+            font-weight: bold;
+        }
+
+        #sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+.content p {
+    text-align: center; /* 添加这行代码让p标签文字居中 */
+}

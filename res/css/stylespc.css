@@ -1,0 +1,88 @@
+/* 布局样式 */
+.layout {
+  display: flex;
+  padding: 5px;
+  width: 100%;
+  overflow-x: hidden; /* 禁止横向滚动 */
+}
+
+/* 左侧固定33% */
+.left {
+  /* 移除绝对定位属性（top/left/position） */
+  flex-basis: 33.333%; /* 精确比例避免计算误差 */
+  flex-shrink: 0;     /* 禁止缩小 */
+  overflow-y: auto;    /* 内容超出时垂直滚动 */
+  /* 可根据需要添加其他样式（如背景色、边框等） */
+  /* background: #f0f0f0; */
+}
+
+/* 右侧占66.667% */
+.right {
+  /* 移除绝对定位属性（top/position） */
+  flex-basis: 66.667%; /* 精确比例 */
+  flex-shrink: 0;      /* 禁止缩小 */
+  overflow-y: auto;     /* 内容超出时垂直滚动 */
+  /* 可根据需要添加其他样式 */
+  /* margin-left: 10px; 如需间隔可添加 */
+}
+#sidebar {
+  z-index: 1100; /* 侧边栏层级 */
+}
+.content {
+  z-index: 1000; /* 内容区层级更高，确保链接可点击 */
+}
+        /* 基础样式保留 */
+   
+        .essay-content { font-size: 1.1em; line-height: 1.6; margin-bottom: 15px; }
+        .essay-meta { color: #666; font-size: 0.9em; margin-top: 10px; }
+        .essay-images { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .essay-images img { width: 100px; height: 100px; object-fit: cover; cursor: zoom-in; transition: transform 0.3s; border-radius: 4px; }
+        .image-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); padding-top: 100px; box-sizing: border-box; }
+        .modal-image { display: block; width: 100%; max-width: 800px; max-height: 10000px; margin: 0 auto; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); animation-name: zoom; animation-duration: 0.3s; }
+        .close-btn { position: absolute; top: 15px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close-btn:hover, .close-btn:focus { color: #ccc; text-decoration: none; }
+        @keyframes zoom { from {transform: scale(0.1)} to {transform: scale(1)} }
+
+        /* 布局与动画核心样式 */
+        .layout {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 120px);
+            overflow-x: hidden; /* 隐藏横向溢出 */
+            box-sizing: border-box; /* 包含padding计算 */
+        }
+
+        .left {
+            flex-shrink: 0; /* 继承stylespc.css */
+            visibility: visible;
+            transition: all 0.3s ease-out;
+            will-change: transform, opacity;
+
+        }
+
+        .right {
+            flex-shrink: 0; /* 继承stylespc.css */
+            transition: flex-basis 0.3s ease-out;
+
+        }
+
+        /* 滚动触发类（关键修正） */
+        .left-hidden {
+            flex-basis: 0 !important; /* 强制宽度为0 */
+            flex-shrink: 1; /* 允许收缩 */
+            visibility: hidden; /* 脱离布局流 */
+            opacity: 0;
+            transform: translateX(-100%);
+            pointer-events: none; /* 禁止交互 */
+            padding: 0 !important; /* 移除内边距 */
+        }
+
+        .right-wide {
+            flex-basis: 100% !important; /* 占满屏幕 */
+        }
+
+
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .left, .right { flex-basis: 100% !important; }
+        }

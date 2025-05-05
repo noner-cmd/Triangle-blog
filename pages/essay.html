@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">即刻</title>
-    <link rel="stylesheet" href="/res/css/styles.css" >
-    <link rel="stylesheet" href="/res/css/roll.css" >
+    <link rel="stylesheet" href="/res/css/styles.css">
+    <link rel="stylesheet" href="/res/css/roll.css">
     <script src="/res/js/roll.js"></script>
     <link rel="stylesheet" href="/res/css/stylespc.css" media="screen and (min-width: 800px)">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -80,7 +80,7 @@
                 });
         }
 
-        // 内容加载
+        // 内容加载（关键修改：添加换行符转换）
         function loadContent() {
             fetch('/config/essay/essay.json')
                 .then(r => r.json())
@@ -88,9 +88,11 @@
                     const container = document.getElementById('essay-container');
                     container.innerHTML = '';
                     essays.sort((a,b) => new Date(b.time) - new Date(a.time)).forEach(essay => {
+                        // 核心修改：将 \r\n 替换为 <br> 标签
+                        const contentWithBr = essay.content.replace(/\r\n/g, '<br>'); 
                         container.innerHTML += `
                             <div class="container">
-                                <div class="essay-content">${essay.content}</div>
+                                <div class="essay-content">${contentWithBr}</div> <!-- 插入带<br>的内容 -->
                                 <div class="essay-meta">
                                     <span>发布时间：${essay.time}</span>
                                     <div class="essay-images">
@@ -111,34 +113,30 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
-// 图片模态框
-function openModal(src) {
-  document.getElementById('modalImg').src = src;
-  document.getElementById('imageModal').style.display = 'block';
-}
+        // 图片模态框
+        function openModal(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imageModal').style.display = 'block';
+        }
 
-function closeModal() {
-  document.getElementById('imageModal').style.display = 'none';
-}
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
 
-// 键盘关闭
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    e.preventDefault(); // 可选：防止某些场景下的默认行为干扰
-    closeModal();
-  }
-});
+        // 键盘关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault(); // 可选：防止某些场景下的默认行为干扰
+                closeModal();
+            }
+        });
 
-// 点击模态框背景关闭（仅当点击的是模态框本身，而非内部图片/内容）
-window.onclick = (e) => {
-  // 注意：这里的类名需与模态框容器的类名一致（原代码为 image-modal）
-  if (e.target.classList.contains('image-modal')) { 
-    closeModal();
-  }
-};       
-
-
-
+        // 点击模态框背景关闭（仅当点击的是模态框本身，而非内部图片/内容）
+        window.onclick = (e) => {
+            if (e.target.classList.contains('image-modal')) { 
+                closeModal();
+            }
+        };
 
         // 初始化
         function init() {
@@ -147,6 +145,8 @@ window.onclick = (e) => {
         }
         window.addEventListener('DOMContentLoaded', init);
 
+        // 假设 handleScroll 是滚动事件处理函数（原代码未定义，可根据需求补充）
+        function handleScroll() { /* 滚动逻辑 */ }
     </script>
 </body>
 </html>
